@@ -12,7 +12,7 @@ port = 5000
 
 shelly_ip = "192.168.188.91"
 
-broker_address = "127.0.0.1"  # IP-Adresse des Raspberry Pi
+broker_address = "localhost"  # IP-Adresse des Raspberry Pi
 client = mqtt.Client("PCClient", transport="tcp")
 
 file_url = f"http://{octoprint_ip}/downloads/logs/auth.log"
