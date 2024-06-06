@@ -12,7 +12,7 @@ port = 5000
 
 shelly_ip = "192.168.188.91"
 
-broker_address = "localhost"  # IP-Adresse des Raspberry Pi
+broker_address = "127.0.0.1"  # IP-Adresse des Raspberry Pi
 client = mqtt.Client("PCClient", transport="tcp")
 
 file_url = f"http://{octoprint_ip}/downloads/logs/auth.log"
@@ -34,6 +34,7 @@ def program():
 
         if not thread_created:
             threading.Thread(target=TurnLightOnOff).start()
+            print("ThreadCreated")
             thread_created = True
 
         file_content = download_and_read_file()
@@ -65,7 +66,6 @@ def TurnLightOnOff():
     except Exception as e:
         sendLogMessages(f"Fehler: {e}")
         time.sleep(100)
-        program()
 
 
 def publish_message(message):
