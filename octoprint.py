@@ -34,6 +34,7 @@ def program():
 
         if not thread_created:
             threading.Thread(target=TurnLightOnOff).start()
+            sendLogMessages("Server wurde erfolgreich neu gestartet!")
             print("ThreadCreated")
             thread_created = True
 
