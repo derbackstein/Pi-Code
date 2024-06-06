@@ -132,11 +132,12 @@ def toggle_shelly():
     url = f"http://{shelly_ip}/relay/0?turn=toggle"
     try:
         global IsFirstShellyToggle
-        response = requests.get(url)
-        if response.status_code == 200 and IsFirstShellyToggle:
-            IsFirstShellyToggle = False
-            time.sleep(10)
-            isPrinterConnected()
+        if IsFirstShellyToggle:
+            response = requests.get(url)
+            if response.status_code == 200:
+                IsFirstShellyToggle = False
+                time.sleep(10)
+                isPrinterConnected()
         elif not IsFirstShellyToggle:
             program()
         else:
