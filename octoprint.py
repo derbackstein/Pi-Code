@@ -174,10 +174,8 @@ def boolisPrinterConnected():
         if response.status_code == 200:
             connection_data = response.json()
             if connection_data["current"]["state"] == "Operational" or connection_data["current"]["state"] == "Printing":
-                print("Printer is Connected")
                 return True
             else:
-                print("Printer is not in operational state. Attempting to reconnect...")
                 return False
         else:
             print("Fehler beim Herunterladen der Datei.")
@@ -264,6 +262,7 @@ def TurnOffPrinter():
             #nur testweise auf 60
             if temp <= 40:
                 toggle_shelly()
+                sendLogMessages("Drucker wird jz ausgeschaltet")
                 #schalte Lüfter aus
                 program()
             else:
@@ -295,7 +294,6 @@ def isNewFileavailable():
         global job_info
         response = requests.get(api_endpoint, headers=headers)
         if response.status_code == 200:
-            print("Dateien wurden ausgelesen")
             new_job_info = response.json()
 
             if job_info is None:
@@ -339,7 +337,7 @@ def sendFinishedPrint():
         sendLogMessages("Druck ist fertig!")
         TurnLightOnOffScreenshot(True)
         image = capture_screenshot(stream_url)
-        time.sleep(2)
+        time.sleep(10)
         TurnLightOnOffScreenshot(False)
         sendFinishPicture(image)
     except Exception as e:
