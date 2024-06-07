@@ -117,10 +117,9 @@ def turnOn3dprinter(IsUserLoggedIn):
 
 def toggle_shelly():
     url = f"http://{shelly_ip}/relay/0?turn=toggle"
-    global IsFirstShellyToggle
 
     try:
-        if IsFirstShellyToggle:
+        if boolisPrinterConnected():
             response = requests.get(url)
             if response.status_code == 200:
                 IsFirstShellyToggle = False
@@ -128,6 +127,19 @@ def toggle_shelly():
                 isPrinterConnected()
             else:
                 sendLogMessages("Fehler beim Umschalten des Shelly 1.")
+    except Exception as e:
+        sendLogMessages(f"Fehler: {e},{url}")
+        time.sleep(100)
+
+def TrunOffPrinter():
+    url = f"http://{shelly_ip}/relay/0?turn=toggle"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            time.sleep(10)
+            isPrinterConnected()
+        else:
+            sendLogMessages("Fehler beim Umschalten des Shelly 1.")
     except Exception as e:
         sendLogMessages(f"Fehler: {e},{url}")
         time.sleep(100)
@@ -237,7 +249,7 @@ def TurnOffPrinter():
                 job_info = response.json()
                 temp = job_info.get("tool0", {}).get("actual")
                 if temp <= 40:
-                    toggle_shelly()
+                    TurnOffPrinter()
                     sendLogMessages("Drucker wird jetzt ausgeschaltet")
                     break
                 else:
@@ -303,10 +315,9 @@ def capture_screenshot(stream_url):
 def sendFinishedPrint():
     stream_url = f'http://{octoprint_ip}/webcam/?action=snapshot'
     try:
-        sendLogMessages("Druck ist fertig!")
         TurnLightOnOffScreenshot(True)
-        image = capture_screenshot(stream_url)
         time.sleep(10)
+        image = capture_screenshot(stream_url)
         TurnLightOnOffScreenshot(False)
         sendFinishPicture(image)
     except Exception as e:
