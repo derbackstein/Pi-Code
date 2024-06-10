@@ -218,10 +218,9 @@ def waitOnJob():
 
 def TurnOffShelly():
     url = f"http://{shelly_ip}/relay/0?turn=toggle"
-
     try:
         response = requests.get(url)
-        program()   
+        program()
     except Exception as e:
         sendLogMessages(f"Fehler: {e},{url}")
         time.sleep(100)
@@ -258,6 +257,7 @@ def TurnOffPrinter():
                 temp = job_info.get("tool0", {}).get("actual")
                 if temp <= 40:
                     sendLogMessages("Drucker wird jetzt ausgeschaltet")
+                    TurnOffShelly()
                     break
                 else:
                     if isNewFileavailable():
