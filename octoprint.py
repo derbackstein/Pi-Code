@@ -6,10 +6,10 @@ import json
 from io import BytesIO
 from Logging import sendLogMessages, sendFinishPicture
 
-octoprint_ip = "192.168.188.95"
+octoprint_ip = "127.0.0.1"
 port = 5000
 shelly_ip = "192.168.188.91"
-broker_address = "192.168.188.95"
+broker_address = "127.0.0.1"
 client = mqtt.Client("PCClient", transport="tcp")
 file_url = f"http://{octoprint_ip}/downloads/logs/auth.log"
 headers = {"X-Api-Key": "4E1BD42388C544499671AB3A5C83E5D6"}
