@@ -249,11 +249,13 @@ def TurnOffPrinter():
                 job_info = response.json()
                 temp = job_info.get("tool0", {}).get("actual")
                 if temp <= 40:
-                    TurnOffPrinter()
                     sendLogMessages("Drucker wird jetzt ausgeschaltet")
                     break
                 else:
-                    time.sleep(10)
+                    if isNewFileavailable():
+                        waitOnJob()
+                    else:
+                        time.sleep(10)
             else:
                 sendLogMessages(f"Fehler beim Abrufen der Druckertemperatur,{api_endpoint}")
                 time.sleep(10)
