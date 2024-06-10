@@ -6,10 +6,10 @@ import json
 from io import BytesIO
 from Logging import sendLogMessages, sendFinishPicture
 
-octoprint_ip = "127.0.0.1"
+octoprint_ip = "192.168.188.95"
 port = 5000
 shelly_ip = "192.168.188.91"
-broker_address = "127.0.0.1"
+broker_address = "192.168.188.95"
 client = mqtt.Client("PCClient", transport="tcp")
 file_url = f"http://{octoprint_ip}/downloads/logs/auth.log"
 headers = {"X-Api-Key": "4E1BD42388C544499671AB3A5C83E5D6"}
@@ -34,7 +34,6 @@ def program():
             file_content = download_and_read_file()
             UserLoggedIn = IsUserLoggedIn(file_content)
             turnOn3dprinter(UserLoggedIn)
-            time.sleep(10)
         except Exception as e:
             sendLogMessages(f"Fehler: {e}")
             time.sleep(100)
@@ -119,10 +118,9 @@ def toggle_shelly():
     url = f"http://{shelly_ip}/relay/0?turn=toggle"
 
     try:
-        if boolisPrinterConnected():
+        if not boolisPrinterConnected():
             response = requests.get(url)
             if response.status_code == 200:
-                IsFirstShellyToggle = False
                 time.sleep(10)
                 isPrinterConnected()
             else:
