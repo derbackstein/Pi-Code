@@ -216,6 +216,16 @@ def waitOnJob():
         sendLogMessages(f"Fehler: {e},{api_endpoint}")
         time.sleep(100)
 
+def TurnOffShelly():
+    url = f"http://{shelly_ip}/relay/0?turn=toggle"
+
+    try:
+        response = requests.get(url)
+        program()   
+    except Exception as e:
+        sendLogMessages(f"Fehler: {e},{url}")
+        time.sleep(100)
+
 def waitOnPrint():
     api_endpoint = f"http://{octoprint_ip}/api/job"
     try:
@@ -318,7 +328,8 @@ def sendFinishedPrint():
         TurnLightOnOffScreenshot(True)
         time.sleep(10)
         image = capture_screenshot(stream_url)
-        TurnLightOnOffScreenshot(False)
+        if not IsUserLoggedIn(download_and_read_file()):
+            TurnLightOnOffScreenshot(False)
         sendFinishPicture(image)
     except Exception as e:
         sendLogMessages(f"Fehler: {e}")
