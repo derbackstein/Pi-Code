@@ -122,22 +122,8 @@ def toggle_shelly():
             response = requests.get(url)
             if response.status_code == 200:
                 time.sleep(10)
-                isPrinterConnected()
             else:
                 sendLogMessages("Fehler beim Umschalten des Shelly 1.")
-    except Exception as e:
-        sendLogMessages(f"Fehler: {e},{url}")
-        time.sleep(100)
-
-def TrunOffPrinter():
-    url = f"http://{shelly_ip}/relay/0?turn=toggle"
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            time.sleep(10)
-            isPrinterConnected()
-        else:
-            sendLogMessages("Fehler beim Umschalten des Shelly 1.")
     except Exception as e:
         sendLogMessages(f"Fehler: {e},{url}")
         time.sleep(100)
@@ -207,6 +193,7 @@ def waitOnJob():
                     sendLogMessages("Der Drucker ist am Drucken")
                     Fileavailable()
                     waitOnPrint()
+                    break
                 elif job_info.get("state") == "Operational":
                     time.sleep(10)
             else:
@@ -220,7 +207,6 @@ def TurnOffShelly():
     url = f"http://{shelly_ip}/relay/0?turn=toggle"
     try:
         response = requests.get(url)
-        program()
     except Exception as e:
         sendLogMessages(f"Fehler: {e},{url}")
         time.sleep(100)
