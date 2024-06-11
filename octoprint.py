@@ -104,6 +104,7 @@ def turnOn3dprinter(IsUserLoggedIn):
             if IsUserLoggedIn:
                 if not boolisPrinterConnected():
                     toggle_shelly()
+                    isPrinterConnected()
                 else:
                     isPrinterConnected()
             else:
