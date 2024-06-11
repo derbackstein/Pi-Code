@@ -122,6 +122,7 @@ def toggle_shelly():
         if not boolisPrinterConnected():
             response = requests.get(url)
             if response.status_code == 200:
+                sendLogMessages("Drucker wurde angeschaltet")
                 time.sleep(10)
             else:
                 sendLogMessages("Fehler beim Umschalten des Shelly 1.")
@@ -204,6 +205,23 @@ def waitOnJob():
         sendLogMessages(f"Fehler: {e},{api_endpoint}")
         time.sleep(100)
 
+def IsPrinterPrinting():
+    api_endpoint = f"http://{octoprint_ip}/api/job"
+    try:
+            response = requests.get(api_endpoint, headers=headers)
+            if response.status_code == 200:
+                job_info = response.json()
+                if job_info.get("state") == "Printing":
+                  return True
+                else:
+                    return False
+            else:
+                sendLogMessages(f"Fehler beim Auslesen vom Job,{api_endpoint}")
+                time.sleep(10)
+    except Exception as e:
+        sendLogMessages(f"Fehler: {e},{api_endpoint}")
+        time.sleep(100)
+
 def TurnOffShelly():
     url = f"http://{shelly_ip}/relay/0?turn=toggle"
     try:
@@ -247,7 +265,7 @@ def TurnOffPrinter():
                     TurnOffShelly()
                     break
                 else:
-                    if isNewFileavailable():
+                    if isNewFileavailable() or IsPrinterPrinting():
                         waitOnJob()
                     else:
                         time.sleep(10)
