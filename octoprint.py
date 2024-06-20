@@ -387,7 +387,7 @@ def createInfoList():
                     # Extrahiere die gewünschten Werte aus job_info
                     file_name = job_info['job']['file'].get('name', 'N/A')
                     estimated_print_time = job_info['job'].get('estimatedPrintTime', 'N/A')
-                    filament = job_info['job']['filament'].get('length', 'N/A')
+                    filament = job_info['job']['filament'].get('tool0', {}).get('length', 'N/A')
                     completion = job_info['progress'].get('completion', 'N/A')
                     print_time_left = job_info['progress'].get('printTimeLeft', 'N/A')
 
@@ -397,7 +397,7 @@ def createInfoList():
 
                     # Konvertiere die Werte in Strings
                     file_name_str = str(file_name)
-                    estimated_print_time_str = str(estimated_print_time)
+                    estimated_print_time_str = format_time(estimated_print_time)
                     completion_str = str(completion)
                     print_time_left_str = format_time(print_time_left)
                     bed_actual_str = str(bed_actual)
