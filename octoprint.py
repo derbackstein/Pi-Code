@@ -5,6 +5,7 @@ import paho.mqtt.client as mqtt
 import json
 from io import BytesIO
 from Logging import sendLogMessages, sendFinishPicture
+from datetime import datetime
 
 octoprint_ip = "127.0.0.1"
 port = 5000
@@ -25,6 +26,7 @@ def program():
 
     if not thread_created:
         threading.Thread(target=TurnLightOnOff).start()
+        threading.Thread(target=createInfoList).start()
         sendLogMessages("Server wurde erfolgreich neu gestartet!")
         print("ThreadCreated")
         thread_created = True
@@ -48,11 +50,11 @@ def TurnLightOnOff():
             UserLoggedIn = IsUserLoggedIn(file_content)
 
             if UserLoggedIn and not IsLightOn:
-                publish_message("true")
+                publish_message("true","your_topic")
                 IsLightOn = True
                 IsLightOff = False
             elif not UserLoggedIn and not IsLightOff:
-                publish_message("false")
+                publish_message("false","your_topic")
                 IsLightOff = True
                 IsLightOn = False
 
@@ -61,11 +63,10 @@ def TurnLightOnOff():
             sendLogMessages(f"Fehler: {e}")
             time.sleep(100)
 
-def publish_message(message):
+def publish_message(message,topic):
     try:
         client.connect(broker_address, 1883, 60)
         client.loop_start()
-        topic = "your_topic"
         client.publish(topic, message)
         client.loop_stop()
     except Exception as e:
@@ -262,6 +263,7 @@ def TurnOffPrinter():
                 temp = job_info.get("tool0", {}).get("actual")
                 if temp <= 40:
                     sendLogMessages("Drucker wird jetzt ausgeschaltet")
+                    deleteJob()
                     TurnOffShelly()
                     break
                 else:
@@ -342,11 +344,74 @@ def sendFinishedPrint():
 def TurnLightOnOffScreenshot(Light):
     try:
         if Light:
-            publish_message("true")
+            publish_message("true","your_topic")
         else:
-            publish_message("false")
+            publish_message("false","your_topic")
     except Exception as e:
         sendLogMessages(f"Fehler: {e}")
         time.sleep(100)
+
+def deleteJob():
+    api_endpoint = f"http://{octoprint_ip}/api/job"
+    try:
+        data = {
+            "command": "cancel"
+        }
+        headers = {
+            "X-Api-Key": "4E1BD42388C544499671AB3A5C83E5D6",
+            "Content-Type": "application/json"
+        }
+
+        response = requests.post(api_endpoint, json=data, headers=headers)
+    except Exception as e:
+        sendLogMessages(f"Fehler: {e},{api_endpoint}")
+        time.sleep(100)
+
+
+def createInfoList():
+    while True:
+        if boolisPrinterConnected():
+            jobInfo = f"http://{octoprint_ip}/api/job"
+            printerInfo = f"http://{octoprint_ip}/api/printer"
+            formatted_time = datetime.now()
+            clock = formatted_time.strftime("%H:%M")
+
+            try:
+                response = requests.get(jobInfo, headers=headers)
+                responsePrinter = requests.get(printerInfo, headers=headers)
+
+                if response.status_code == 200 and responsePrinter.status_code == 200:
+                    job_info = response.json()
+                    printer_info = responsePrinter.json()
+
+                    # Extrahiere die gewünschten Werte aus job_info
+                    file_name = job_info['job']['file'].get('name', 'N/A')
+                    estimated_print_time = job_info['job'].get('estimatedPrintTime', 'N/A')
+                    filament = job_info['job'].get('filament', 'N/A')
+                    completion = job_info['progress'].get('completion', 'N/A')
+                    print_time_left = job_info['progress'].get('printTimeLeft', 'N/A')
+
+                    # Extrahiere die gewünschten Werte aus printer_info
+                    bed_actual = printer_info['temperature']['bed'].get('actual', 'N/A')
+                    tool0_actual = printer_info['temperature']['tool0'].get('actual', 'N/A')
+
+                    # Konvertiere die Werte in Strings
+                    file_name_str = str(file_name)
+                    estimated_print_time_str = str(estimated_print_time)
+                    completion_str = str(completion)
+                    print_time_left_str = str(print_time_left)
+                    bed_actual_str = str(bed_actual)
+                    tool0_actual_str = str(tool0_actual)
+
+                    test = f"{file_name_str};{estimated_print_time_str};{completion_str};{print_time_left_str};{bed_actual_str};{tool0_actual_str};{filament};{clock}"
+                    publish_message(test, "info")
+                    time.sleep(1)
+
+                else:
+                    sendLogMessages(f"Fehler beim Auslesen der Daten, Job: {response.status_code}, Printer: {responsePrinter.status_code}")
+                    time.sleep(10)
+            except Exception as e:
+                sendLogMessages(f"Fehler: {e}, URL: {jobInfo} oder {printerInfo}")
+                time.sleep(10)
 
 program()
