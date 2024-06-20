@@ -399,7 +399,7 @@ def createInfoList():
                     file_name_str = str(file_name)
                     estimated_print_time_str = str(estimated_print_time)
                     completion_str = str(completion)
-                    print_time_left_str = str(print_time_left)
+                    print_time_left_str = format_time(print_time_left)
                     bed_actual_str = str(bed_actual)
                     tool0_actual_str = str(tool0_actual)
 
@@ -413,5 +413,15 @@ def createInfoList():
             except Exception as e:
                 sendLogMessages(f"Fehler: {e}, URL: {jobInfo} oder {printerInfo}")
                 time.sleep(10)
+
+
+def format_time(seconds):
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+
+    if hours > 0:
+        return f"{hours}:{minutes}"
+    else:
+        return f"{minutes} Min"
 
 program()
