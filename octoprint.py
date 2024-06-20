@@ -390,7 +390,7 @@ def createInfoList():
                     filament_length_cm = job_info['job']['filament'].get('tool0', {}).get('length', 'N/A')
                     if filament_length_cm != 'N/A':
                         try:
-                            filament_length_m = float(filament_length_cm) / 100  # Umrechnung in Meter
+                            filament_length_m = float(filament_length_cm) / 1000  # Umrechnung in Meter
                         except ValueError:
                             filament_length_m = 'Ungültige Länge'
                     else:
@@ -418,7 +418,6 @@ def createInfoList():
                     sendLogMessages(f"Fehler beim Auslesen der Daten, Job: {response.status_code}, Printer: {responsePrinter.status_code}")
                     time.sleep(10)
             except Exception as e:
-                sendLogMessages(f"Fehler: {e}, URL: {jobInfo} oder {printerInfo}")
                 time.sleep(10)
 
 
