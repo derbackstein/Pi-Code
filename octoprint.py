@@ -387,7 +387,14 @@ def createInfoList():
                     # Extrahiere die gewünschten Werte aus job_info
                     file_name = job_info['job']['file'].get('name', 'N/A')
                     estimated_print_time = job_info['job'].get('estimatedPrintTime', 'N/A')
-                    filament = job_info['job']['filament'].get('tool0', {}).get('length', 'N/A')
+                    filament_length_cm = job_info['job']['filament'].get('tool0', {}).get('length', 'N/A')
+                    if filament_length_cm != 'N/A':
+                        try:
+                            filament_length_m = float(filament_length_cm) / 100  # Umrechnung in Meter
+                        except ValueError:
+                            filament_length_m = 'Ungültige Länge'
+                    else:
+                        filament_length_m = 'N/A'
                     completion = job_info['progress'].get('completion', 'N/A')
                     print_time_left = job_info['progress'].get('printTimeLeft', 'N/A')
 
@@ -403,7 +410,7 @@ def createInfoList():
                     bed_actual_str = str(bed_actual)
                     tool0_actual_str = str(tool0_actual)
 
-                    test = f"{file_name_str};{estimated_print_time_str};{completion_str};{print_time_left_str};{bed_actual_str};{tool0_actual_str};{filament};{clock}"
+                    test = f"{file_name_str};{estimated_print_time_str};{completion_str};{print_time_left_str};{bed_actual_str};{tool0_actual_str};{filament_length_m};{clock}"
                     publish_message(test, "info")
                     time.sleep(1)
 
