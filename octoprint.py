@@ -380,9 +380,18 @@ def createInfoList():
                 response = requests.get(jobInfo, headers=headers)
                 responsePrinter = requests.get(printerInfo, headers=headers)
 
+                # Log the responses for debugging
+                print(f"Job API Response: {response.text}")
+                print(f"Printer API Response: {responsePrinter.text}")
+
                 if response.status_code == 200 and responsePrinter.status_code == 200:
                     job_info = response.json()
                     printer_info = responsePrinter.json()
+
+                    if job_info is None or printer_info is None:
+                        sendLogMessages("Received None response from API")
+                        time.sleep(10)
+                        continue
 
                     # Extrahiere die gewünschten Werte aus job_info
                     file_name = job_info['job']['file'].get('name', 'N/A')
@@ -418,6 +427,7 @@ def createInfoList():
                     sendLogMessages(f"Fehler beim Auslesen der Daten, Job: {response.status_code}, Printer: {responsePrinter.status_code}")
                     time.sleep(10)
             except Exception as e:
+                sendLogMessages(f"Exception: {e}")
                 time.sleep(10)
 
 
