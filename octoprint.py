@@ -399,7 +399,7 @@ def createInfoList():
                     filament_length_cm = job_info['job']['filament'].get('tool0', {}).get('length', 'N/A')
                     if filament_length_cm != 'N/A':
                         try:
-                            filament_length_m = float(filament_length_cm) / 1000  # Umrechnung in Meter
+                            filament_length_m = round(float(filament_length_cm) / 1000, 3)  
                         except ValueError:
                             filament_length_m = 'Ungültige Länge'
                     else:
