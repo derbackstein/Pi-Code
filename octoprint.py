@@ -380,10 +380,6 @@ def createInfoList():
                 response = requests.get(jobInfo, headers=headers)
                 responsePrinter = requests.get(printerInfo, headers=headers)
 
-                # Log the responses for debugging
-                print(f"Job API Response: {response.text}")
-                print(f"Printer API Response: {responsePrinter.text}")
-
                 if response.status_code == 200 and responsePrinter.status_code == 200:
                     job_info = response.json()
                     printer_info = responsePrinter.json()
@@ -399,7 +395,7 @@ def createInfoList():
                     filament_length_cm = job_info['job']['filament'].get('tool0', {}).get('length', 'N/A')
                     if filament_length_cm != 'N/A':
                         try:
-                            filament_length_m = round(float(filament_length_cm) / 1000, 3)  
+                            filament_length_m = round(float(filament_length_cm) / 1000, 3)
                         except ValueError:
                             filament_length_m = 'Ungültige Länge'
                     else:
