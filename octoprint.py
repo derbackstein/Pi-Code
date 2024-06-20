@@ -416,6 +416,12 @@ def createInfoList():
 
 
 def format_time(seconds):
+    if(seconds is None):
+        return ""
+    try:
+        seconds = int(seconds)  # Sicherstellen, dass seconds ein Integer ist
+    except ValueError:
+        return "Ungültige Zeit"
     hours = seconds // 3600
     minutes = (seconds % 3600) // 60
 
