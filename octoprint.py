@@ -392,8 +392,8 @@ def createInfoList():
                     print_time_left = job_info['progress'].get('printTimeLeft', 'N/A')
 
                     # Extrahiere die gewünschten Werte aus printer_info
-                    bed_actual = printer_info['temperature']['bed'].get('actual', 'N/A')
-                    tool0_actual = printer_info['temperature']['tool0'].get('actual', 'N/A')
+                    bed_actual = printer_info['temperature'].get('actual', 'N/A')
+                    tool0_actual = printer_info['tool0'].get('actual', 'N/A')
 
                     # Konvertiere die Werte in Strings
                     file_name_str = str(file_name)
